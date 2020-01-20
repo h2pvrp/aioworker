@@ -1,8 +1,28 @@
 import asyncio
+import datetime
+import json
 from typing import Awaitable, Dict
 from aiohttp import web
 from .aliases import BlockingHandler, Handler, MethodHandler, Request, Response
 
+
+async def time_measurement_async(fun, *args, **kwargs):
+    start = datetime.datetime.now()
+    data = await fun(*args, **kwargs)
+    end = datetime.datetime.now()
+    delta = end - start
+    return delta.microseconds, data
+
+def time_measurement(fun, *args, **kwargs):
+    start = datetime.datetime.now()
+    data = fun(*args, **kwargs)
+    end = datetime.datetime.now()
+    delta = end - start
+    return delta.microseconds, data
+
+def load_settings():
+    with open('settings.json') as json_file:
+        return json.load(json_file)
 
 def post_handler_factory(handler: Handler) -> MethodHandler:
     async def post_handler(request: Request) -> Response:
